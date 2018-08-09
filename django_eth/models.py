@@ -1,7 +1,8 @@
+import ethereum.utils
 from django.db import models
 from hexbytes import HexBytes
+
 from .validators import validate_checksumed_address
-import ethereum.utils
 
 
 class EthereumAddressField(models.CharField):
@@ -100,4 +101,3 @@ class HexField(models.CharField):
             return value.hex()[2:]
         else:  # str
             return HexBytes(value).hex()[2:]
-

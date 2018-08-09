@@ -1,4 +1,5 @@
 import os
+
 from setuptools import find_packages, setup
 
 with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
@@ -16,7 +17,7 @@ requirements = [
 
 setup(
     name='django-eth',
-    version='0.1.2',
+    version='0.1.3',
     packages=find_packages(),
     install_requires=requirements,
     include_package_data=True,
