@@ -71,8 +71,8 @@ class SignatureSerializer(serializers.Serializer):
 class TransactionSerializer(serializers.Serializer):
     from_ = EthereumAddressField()
     value = serializers.IntegerField(min_value=0)
-    data = serializers.CharField()
-    gas = serializers.HexadecimalField(min_value=0)
+    data = HexadecimalField()
+    gas = serializers.IntegerField(min_value=0)
     gas_price = serializers.IntegerField(min_value=0)
     nonce = serializers.IntegerField(min_value=0)
 
