@@ -1,4 +1,2 @@
 INSTALLED_APPS = (
 )
-
-ETH_HASH_PREFIX = 'GNO'

@@ -63,6 +63,7 @@ typings/
 .python-version
 *.egg-info
 .pytest_cache/
+dist/
 
 .ipfs
 
