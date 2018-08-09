@@ -16,8 +16,9 @@ requirements = [
 
 setup(
     name='django-eth',
-    version='0.1.1',
+    version='0.1.2',
     packages=find_packages(),
+    install_requires=requirements,
     include_package_data=True,
     license='MIT License',
     description='Ethereum utilities for Django and Django Rest projects',
