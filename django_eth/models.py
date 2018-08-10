@@ -36,42 +36,10 @@ class EthereumAddressField(models.CharField):
             return value
 
 
-class EthereumBigIntegerField(models.CharField):
-    def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = 64
-        super().__init__(*args, **kwargs)
-
-    def from_db_value(self, value, expression, connection):
-        return self.to_python(value)
-
-    def to_python(self, value):
-        """
-        Retrieve value as int
-        :param value: number in hexadecimal
-        :return: number as int
-        """
-        value = super().to_python(value)
-        if not value:
-            return value
-        else:
-            return int(value, 16)
-
-    def get_prep_value(self, value):
-        """
-        :param value:  number in hex or int
-        :return: number in hex without 0x
-        """
-        if not value:
-            return value
-        if isinstance(value, str):
-            return value
-        else:
-            return hex(int(value))[2:]
-
-
 class Uint256Field(models.DecimalField):
     """
-    Field to store ethereum uint256 values
+    Field to store ethereum uint256 values. Uses Decimal db type without decimals to store
+    in the database, but retrieve as `int` instead of `Decimal` (https://docs.python.org/3/library/decimal.html)
     """
     def __init__(self, *args, **kwargs):
         kwargs['max_digits'] = 78  # 2^256 is 78 digits
@@ -83,6 +51,16 @@ class Uint256Field(models.DecimalField):
         del kwargs['max_digits']
         del kwargs['decimal_places']
         return name, path, args, kwargs
+
+    def from_db_value(self, value, expression, connection):
+        return self.to_python(value)
+
+    def to_python(self, value):
+        value = super().to_python(value)
+        if value:
+            return int(value)
+        else:
+            return value
 
 
 class HexField(models.CharField):
@@ -117,3 +95,39 @@ class HexField(models.CharField):
             return value.hex()[2:]  # HexBytes.hex() retrieves hexadecimal with '0x', remove it
         else:  # str
             return HexBytes(value).hex()[2:]
+
+
+class EthereumBigIntegerField(models.CharField):
+    """
+    Deprecated
+    """
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 64
+        super().__init__(*args, **kwargs)
+
+    def from_db_value(self, value, expression, connection):
+        return self.to_python(value)
+
+    def to_python(self, value):
+        """
+        Retrieve value as int
+        :param value: number in hexadecimal
+        :return: number as int
+        """
+        value = super().to_python(value)
+        if not value:
+            return value
+        else:
+            return int(value, 16)
+
+    def get_prep_value(self, value):
+        """
+        :param value:  number in hex or int
+        :return: number in hex without 0x
+        """
+        if not value:
+            return value
+        if isinstance(value, str):
+            return value
+        else:
+            return hex(int(value))[2:]
