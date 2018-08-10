@@ -82,6 +82,7 @@ class Uint256Field(models.DecimalField):
         name, path, args, kwargs = super().deconstruct()
         del kwargs['max_digits']
         del kwargs['decimal_places']
+        return name, path, args, kwargs
 
 
 class HexField(models.CharField):
