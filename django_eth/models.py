@@ -69,6 +69,21 @@ class EthereumBigIntegerField(models.CharField):
             return hex(int(value))[2:]
 
 
+class Uint256Field(models.DecimalField):
+    """
+    Field to store ethereum uint256 values
+    """
+    def __init__(self, *args, **kwargs):
+        kwargs['max_digits'] = 78  # 2^256 is 78 digits
+        kwargs['decimal_places'] = 0
+        super().__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        del kwargs['max_digits']
+        del kwargs['decimal_places']
+
+
 class HexField(models.CharField):
     """
     Field to store hex values (without 0x). Returns hex with 0x prefix.
@@ -96,8 +111,8 @@ class HexField(models.CharField):
         if value is None:
             return value
         elif isinstance(value, bytes):
-            return value.hex()
+            return value.hex()  # bytes.hex() retrieves hexadecimal without '0x'
         elif isinstance(value, HexBytes):
-            return value.hex()[2:]
+            return value.hex()[2:]  # HexBytes.hex() retrieves hexadecimal with '0x', remove it
         else:  # str
             return HexBytes(value).hex()[2:]
