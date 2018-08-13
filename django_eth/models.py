@@ -90,15 +90,6 @@ class HexField(models.CharField):
     """
     description = "Stores a hex value into an CharField"
 
-    def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = 64
-        super().__init__(*args, **kwargs)
-
-    def deconstruct(self):
-        name, path, args, kwargs = super().deconstruct()
-        del kwargs['max_length']
-        return name, path, args, kwargs
-
     def from_db_value(self, value, expression, connection):
         return self.to_python(value)
 
@@ -108,12 +99,23 @@ class HexField(models.CharField):
     def get_prep_value(self, value):
         if value is None:
             return value
-        elif isinstance(value, bytes):
-            return value.hex()  # bytes.hex() retrieves hexadecimal without '0x'
         elif isinstance(value, HexBytes):
             return value.hex()[2:]  # HexBytes.hex() retrieves hexadecimal with '0x', remove it
+        elif isinstance(value, bytes):
+            return value.hex()  # bytes.hex() retrieves hexadecimal without '0x'
         else:  # str
             return HexBytes(value).hex()[2:]
+
+
+class Sha3HashField(HexField):
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 64
+        super().__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        del kwargs['max_length']
+        return name, path, args, kwargs
 
 
 class EthereumBigIntegerField(models.Field):
