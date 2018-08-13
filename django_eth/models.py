@@ -46,7 +46,7 @@ class Uint256Field(models.Field):
     in the database, but retrieve as `int` instead of `Decimal` (https://docs.python.org/3/library/decimal.html)
     """
     def __init__(self, *args, **kwargs):
-        self.max_digits, self.decimal_places = 79, 0  # 2^256 is 78 digits
+        self.max_digits, self.decimal_places = 79, 0  # 2 ** 256 is 78 digits
         super().__init__(*args, **kwargs)
 
     def get_internal_type(self):

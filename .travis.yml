@@ -3,6 +3,8 @@ cache: pip
 python:
   - "3.6"
 dist: trusty
+services:
+  - postgresql
 env:
   global:
   - SOURCE_FOLDER=django_ethereum
@@ -10,6 +12,8 @@ env:
 install:
   - pip install -r requirements.txt
   - pip install coveralls
+before_script:
+  - psql -c 'create database postgres;' -U postgres
 script:
   - coverage run --source=$SOURCE_FOLDER manage.py test --settings=config.settings.test
 after_success:
