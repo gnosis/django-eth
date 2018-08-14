@@ -2,6 +2,7 @@ from django.test import TestCase
 from ethereum.utils import sha3
 from hexbytes import HexBytes
 from rest_framework import serializers
+from rest_framework.renderers import JSONRenderer
 
 from ..serializers import HexadecimalField, Sha3HashField
 
@@ -27,6 +28,8 @@ class TestSerializers(TestCase):
         serializer = HexadecimalBlankSerializerTest(data={'value': '0x'})
         self.assertTrue(serializer.is_valid())
         self.assertIsNone(serializer.validated_data['value'])
+        json_data = JSONRenderer().render(serializer.data).decode()
+        self.assertIn('null', json_data)
 
         serializer = HexadecimalBlankSerializerTest(data={'value': None})
         self.assertFalse(serializer.is_valid())
@@ -35,10 +38,27 @@ class TestSerializers(TestCase):
         self.assertTrue(serializer.is_valid())
         self.assertIsNone(serializer.validated_data['value'])
 
-        value = '0xabc'
+        value = '0xabcd'
         serializer = HexadecimalSerializerTest(data={'value': value})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data['value'], HexBytes(value))
+        json_data = JSONRenderer().render(serializer.data).decode()
+        self.assertIn(value, json_data)
+
+        value = '0xabcd'
+        serializer = HexadecimalSerializerTest(data={'value': HexBytes(value)})
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.validated_data['value'], HexBytes(value))
+        json_data = JSONRenderer().render(serializer.data).decode()
+        self.assertIn(value, json_data)
+
+        value = '0xabcd'
+        bytes_value = bytes.fromhex(value.replace('0x', ''))
+        serializer = HexadecimalSerializerTest(data={'value': bytes_value})
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.validated_data['value'], HexBytes(value))
+        json_data = JSONRenderer().render(serializer.data).decode()
+        self.assertIn(value, json_data)
 
         value = 'abc'
         serializer = HexadecimalSerializerTest(data={'value': value})

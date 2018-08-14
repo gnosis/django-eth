@@ -1,5 +1,6 @@
-from ..models import Sha3HashField, EthereumAddressField, Uint256Field
 from django.db import models
+
+from ..models import EthereumAddressField, Sha3HashField, Uint256Field
 
 
 class EthereumAddress(models.Model):
@@ -12,4 +13,3 @@ class Uint256(models.Model):
 
 class Sha3Hash(models.Model):
     value = Sha3HashField()
-

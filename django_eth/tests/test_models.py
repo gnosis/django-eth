@@ -1,9 +1,9 @@
 from django.test import TestCase
+from ethereum.utils import check_checksum, sha3
 from faker import Faker
 
-from .models import EthereumAddress, Sha3Hash, Uint256
 from .factories import get_eth_address_with_key
-from ethereum.utils import check_checksum, sha3
+from .models import EthereumAddress, Sha3Hash, Uint256
 
 faker = Faker()
 
@@ -66,4 +66,3 @@ class TestModels(TestCase):
         value_hex_invalid: str = '0x' + value_hex_without_0x + 'a'
         with self.assertRaises(Exception):
             Sha3Hash.objects.create(value=value_hex_invalid)
-
