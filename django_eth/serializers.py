@@ -66,7 +66,7 @@ class HexadecimalField(serializers.Field):
             return obj.hex()
 
     def to_internal_value(self, data):
-        if isinstance(data, bytes):
+        if isinstance(data, (bytes, memoryview)):
             data = data.hex()
 
         data = data.strip()  # Trim spaces
