@@ -65,6 +65,17 @@ class TestSerializers(TestCase):
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data['value'], HexBytes(value))
 
+    def test_hexadecimal_class_field(self):
+        class A:
+            pass
+
+        a = A()
+        for value in ['abc', '0xabc', b'23', memoryview(b'23')]:
+            hex_value = value if isinstance(value, str) else value.hex()
+            a.value = value
+            serializer = HexadecimalSerializerTest(a)
+            self.assertEqual(serializer.data['value'], HexBytes(hex_value).hex())
+
     def test_hash_serializer_field(self):
         value = sha3('test').hex()
         serializer = Sha3HashSerializerTest(data={'value': value})

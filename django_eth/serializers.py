@@ -62,8 +62,14 @@ class HexadecimalField(serializers.Field):
     def to_representation(self, obj):
         if not obj:
             return '0x'
-        else:
-            return obj.hex()
+
+        # We can get another types like `memoryview` from django models. `to_internal_value` is not used
+        # when you provide an object instead of a json using `data`. Make sure everything is HexBytes.
+        if hasattr(obj, 'hex'):
+            obj = HexBytes(obj.hex())
+        elif not isinstance(obj, HexBytes):
+            obj = HexBytes(obj)
+        return obj.hex()
 
     def to_internal_value(self, data):
         if isinstance(data, (bytes, memoryview)):
