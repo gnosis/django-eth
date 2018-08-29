@@ -4,6 +4,8 @@ from hexbytes import HexBytes
 from rest_framework import serializers
 
 from ..serializers import EthereumAddressField, HexadecimalField, Sha3HashField
+from .factories import (get_eth_address_with_invalid_checksum,
+                        get_eth_address_with_key)
 
 
 class EthereumAddressSerializerTest(serializers.Serializer):
@@ -28,14 +30,18 @@ class Sha3HashSerializerTest(serializers.Serializer):
 
 class TestSerializers(TestCase):
     def test_ethereum_address_field(self):
+        valid_address, _ = get_eth_address_with_key()
         for value in ['0x674647242239941B2D35368E66A4EDc39b161Da1',
                       '0x40f3F89639Bffc7B23Ca5d9FCb9ed9a9c579664A',
+                      valid_address,
                       None]:
             serializer = EthereumAddressSerializerTest(data={'value': value})
             self.assertTrue(serializer.is_valid())
             self.assertEqual(value, serializer.data['value'])
 
+        invalid_address = get_eth_address_with_invalid_checksum()
         for not_valid_value in ['0x674647242239941B2D35368E66A4EDc39b161DA1',
+                                invalid_address,
                                 '0x0000000000000000000000000000000000000000',
                                 '0x0000000000000000000000000000000000000001'
                                 '0xABC',

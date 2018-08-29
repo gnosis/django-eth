@@ -6,7 +6,6 @@ from hexbytes import HexBytes
 from .factories import get_eth_address_with_key
 from .models import EthereumAddress, Sha3Hash, Uint256
 
-
 faker = Faker()
 
 
@@ -35,9 +34,7 @@ class TestModels(TestCase):
         # Overflow
         with self.assertRaises(Exception):
             value = 2 ** 263
-            uint256 = Uint256.objects.create(value=value)
-            uint256.refresh_from_db()
-            self.assertEqual(uint256.value, value)
+            Uint256.objects.create(value=value)
 
     def test_sha3_hash_field(self):
         value: bytes = sha3(faker.name())
@@ -54,6 +51,11 @@ class TestModels(TestCase):
 
         for v in values:
             self.assertEqual(Sha3Hash.objects.filter(value=v).count(), len(values))
+
+        # Hash null
+        sha3_hash = Sha3Hash.objects.create(value=None)
+        sha3_hash.refresh_from_db()
+        self.assertIsNone(sha3_hash.value)
 
         # Hash too big
         value_hex_invalid: str = '0x' + value_hex_without_0x + 'a'
