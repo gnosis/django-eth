@@ -43,7 +43,7 @@ class TestSerializers(TestCase):
         for not_valid_value in ['0x674647242239941B2D35368E66A4EDc39b161DA1',
                                 invalid_address,
                                 '0x0000000000000000000000000000000000000000',
-                                '0x0000000000000000000000000000000000000001'
+                                '0x0000000000000000000000000000000000000001',
                                 '0xABC',
                                 '0xJK']:
             serializer = EthereumAddressSerializerTest(data={'value': not_valid_value})
