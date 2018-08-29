@@ -7,7 +7,7 @@ services:
   - postgresql
 env:
   global:
-  - SOURCE_FOLDER=django_ethereum
+  - SOURCE_FOLDER=django_eth
   - PIP_USE_MIRRORS=true
 install:
   - pip install -r requirements.txt
