@@ -4,12 +4,12 @@ from ..models import EthereumAddressField, Sha3HashField, Uint256Field
 
 
 class EthereumAddress(models.Model):
-    value = EthereumAddressField()
+    value = EthereumAddressField(null=True)
 
 
 class Uint256(models.Model):
-    value = Uint256Field()
+    value = Uint256Field(null=True)
 
 
 class Sha3Hash(models.Model):
-    value = Sha3HashField()
+    value = Sha3HashField(null=True)

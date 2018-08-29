@@ -2,9 +2,12 @@ from django.test import TestCase
 from ethereum.utils import sha3
 from hexbytes import HexBytes
 from rest_framework import serializers
-from rest_framework.renderers import JSONRenderer
 
-from ..serializers import HexadecimalField, Sha3HashField
+from ..serializers import EthereumAddressField, HexadecimalField, Sha3HashField
+
+
+class EthereumAddressSerializerTest(serializers.Serializer):
+    value = EthereumAddressField(allow_null=True)
 
 
 class HexadecimalSerializerTest(serializers.Serializer):
@@ -24,12 +27,27 @@ class Sha3HashSerializerTest(serializers.Serializer):
 
 
 class TestSerializers(TestCase):
+    def test_ethereum_address_field(self):
+        for value in ['0x674647242239941B2D35368E66A4EDc39b161Da1',
+                      '0x40f3F89639Bffc7B23Ca5d9FCb9ed9a9c579664A',
+                      None]:
+            serializer = EthereumAddressSerializerTest(data={'value': value})
+            self.assertTrue(serializer.is_valid())
+            self.assertEqual(value, serializer.data['value'])
+
+        for not_valid_value in ['0x674647242239941B2D35368E66A4EDc39b161DA1',
+                                '0x0000000000000000000000000000000000000000',
+                                '0x0000000000000000000000000000000000000001'
+                                '0xABC',
+                                '0xJK']:
+            serializer = EthereumAddressSerializerTest(data={'value': not_valid_value})
+            self.assertFalse(serializer.is_valid())
+
     def test_hexadecimal_field(self):
         serializer = HexadecimalBlankSerializerTest(data={'value': '0x'})
         self.assertTrue(serializer.is_valid())
         self.assertIsNone(serializer.validated_data['value'])
-        json_data = JSONRenderer().render(serializer.data).decode()
-        self.assertIn('null', json_data)
+        self.assertIsNone(serializer.data['value'])
 
         serializer = HexadecimalBlankSerializerTest(data={'value': None})
         self.assertFalse(serializer.is_valid())
@@ -42,23 +60,20 @@ class TestSerializers(TestCase):
         serializer = HexadecimalSerializerTest(data={'value': value})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data['value'], HexBytes(value))
-        json_data = JSONRenderer().render(serializer.data).decode()
-        self.assertIn(value, json_data)
+        self.assertEqual(value, serializer.data['value'])
 
         value = '0xabcd'
         serializer = HexadecimalSerializerTest(data={'value': HexBytes(value)})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data['value'], HexBytes(value))
-        json_data = JSONRenderer().render(serializer.data).decode()
-        self.assertIn(value, json_data)
+        self.assertEqual(value, serializer.data['value'])
 
         value = '0xabcd'
         bytes_value = bytes.fromhex(value.replace('0x', ''))
         serializer = HexadecimalSerializerTest(data={'value': bytes_value})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data['value'], HexBytes(value))
-        json_data = JSONRenderer().render(serializer.data).decode()
-        self.assertIn(value, json_data)
+        self.assertEqual(value, serializer.data['value'])
 
         value = 'abc'
         serializer = HexadecimalSerializerTest(data={'value': value})

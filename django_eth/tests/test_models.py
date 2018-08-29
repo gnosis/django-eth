@@ -1,11 +1,14 @@
 from django.test import TestCase
 from ethereum.utils import check_checksum, sha3
 from faker import Faker
+from hexbytes import HexBytes
 
 from .factories import get_eth_address_with_key
 from .models import EthereumAddress, Sha3Hash, Uint256
 
+
 faker = Faker()
+
 
 class TestModels(TestCase):
     def test_ethereum_address_field(self):
@@ -16,29 +19,18 @@ class TestModels(TestCase):
         self.assertTrue(check_checksum(ethereum_address.value))
         self.assertEqual(address, ethereum_address.value)
 
+        ethereum_address = EthereumAddress.objects.create(value=None)
+        ethereum_address.refresh_from_db()
+        self.assertIsNone(ethereum_address.value)
+
         with self.assertRaises(Exception):
             EthereumAddress.objects.create(value='0x23')
 
     def test_uint256_field(self):
-        value = 2
-        uint256 = Uint256.objects.create(value=value)
-        uint256.refresh_from_db()
-        self.assertEqual(uint256.value, value)
-
-        value = -2
-        uint256 = Uint256.objects.create(value=value)
-        uint256.refresh_from_db()
-        self.assertEqual(uint256.value, value)
-
-        value = 2 ** 256
-        uint256 = Uint256.objects.create(value=value)
-        uint256.refresh_from_db()
-        self.assertEqual(uint256.value, value)
-
-        value = 2 ** 260
-        uint256 = Uint256.objects.create(value=value)
-        uint256.refresh_from_db()
-        self.assertEqual(uint256.value, value)
+        for value in [2, -2, 2 ** 256, 2 ** 260, None]:
+            uint256 = Uint256.objects.create(value=value)
+            uint256.refresh_from_db()
+            self.assertEqual(uint256.value, value)
 
         # Overflow
         with self.assertRaises(Exception):
@@ -51,8 +43,9 @@ class TestModels(TestCase):
         value: bytes = sha3(faker.name())
         value_hex_without_0x: str = value.hex()
         value_hex_with_0x: str = '0x' + value_hex_without_0x
+        value_hexbytes: HexBytes = HexBytes(value_hex_with_0x)
 
-        values = [value, value_hex_without_0x, value_hex_with_0x]
+        values = [value, value_hex_without_0x, value_hex_with_0x, value_hexbytes]
 
         for v in values:
             sha3_hash = Sha3Hash.objects.create(value=v)
