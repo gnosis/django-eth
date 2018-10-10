@@ -20,18 +20,22 @@ class EthereumAddressField(serializers.Field):
     https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
     """
 
+    def __init__(self, allow_zero_address=False, allow_sentinel_address=False, **kwargs):
+        self.allow_zero_address = allow_zero_address
+        self.allow_sentinel_address = allow_sentinel_address
+        super().__init__(**kwargs)
+
     def to_representation(self, obj):
         return obj
 
     def to_internal_value(self, data):
         # Check if address is valid
-
         try:
             if checksum_encode(data) != data:
                 raise ValueError
-            elif int(data, 16) == 0:
+            elif int(data, 16) == 0 and not self.allow_zero_address:
                 raise ValidationError("0x0 address is not allowed")
-            elif int(data, 16) == 1:
+            elif int(data, 16) == 1 and not self.allow_sentinel_address:
                 raise ValidationError("0x1 address is not allowed")
         except ValueError:
             raise ValidationError("Address %s is not checksumed" % data)

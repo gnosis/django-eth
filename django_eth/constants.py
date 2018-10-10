@@ -1,6 +1,7 @@
 from ethereum.transactions import secpk1n
 
 NULL_ADDRESS = '0x' + '0' * 40
+SENTINEL_ADDRESS = '0x' + '0' * 39 + '1'
 
 SIGNATURE_R_MIN_VALUE = 1
 SIGNATURE_R_MAX_VALUE = secpk1n - 1

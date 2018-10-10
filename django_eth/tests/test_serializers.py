@@ -3,6 +3,7 @@ from ethereum.utils import sha3
 from hexbytes import HexBytes
 from rest_framework import serializers
 
+from ..constants import NULL_ADDRESS, SENTINEL_ADDRESS
 from ..serializers import EthereumAddressField, HexadecimalField, Sha3HashField
 from .factories import (get_eth_address_with_invalid_checksum,
                         get_eth_address_with_key)
@@ -10,6 +11,14 @@ from .factories import (get_eth_address_with_invalid_checksum,
 
 class EthereumAddressSerializerTest(serializers.Serializer):
     value = EthereumAddressField(allow_null=True)
+
+
+class EthereumSentinelAddressSerializerTest(serializers.Serializer):
+    value = EthereumAddressField(allow_null=True, allow_sentinel_address=True)
+
+
+class EthereumZeroAddressSerializerTest(serializers.Serializer):
+    value = EthereumAddressField(allow_null=True, allow_zero_address=True)
 
 
 class HexadecimalSerializerTest(serializers.Serializer):
@@ -48,6 +57,20 @@ class TestSerializers(TestCase):
                                 '0xJK']:
             serializer = EthereumAddressSerializerTest(data={'value': not_valid_value})
             self.assertFalse(serializer.is_valid())
+
+    def test_ethereum_zero_address_field(self):
+        valid_address, _ = get_eth_address_with_key()
+        S = EthereumZeroAddressSerializerTest
+        self.assertTrue(S(data={'value': valid_address}).is_valid())
+        self.assertTrue(S(data={'value': NULL_ADDRESS}).is_valid())
+        self.assertFalse(S(data={'value': SENTINEL_ADDRESS}).is_valid())
+
+    def test_ethereum_sentinel_address_field(self):
+        valid_address, _ = get_eth_address_with_key()
+        S = EthereumSentinelAddressSerializerTest
+        self.assertTrue(S(data={'value': valid_address}).is_valid())
+        self.assertTrue(S(data={'value': SENTINEL_ADDRESS}).is_valid())
+        self.assertFalse(S(data={'value': NULL_ADDRESS}).is_valid())
 
     def test_hexadecimal_field(self):
         serializer = HexadecimalBlankSerializerTest(data={'value': '0x'})
