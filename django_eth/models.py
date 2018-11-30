@@ -1,11 +1,13 @@
 import ethereum.utils
 from django import forms
 from django.core import exceptions
-from django.db import models
+from django.db import models, DefaultConnectionProxy
 from django.utils.translation import gettext_lazy as _
 from hexbytes import HexBytes
 
 from .validators import validate_checksumed_address
+
+connection = DefaultConnectionProxy()
 
 
 class EthereumAddressField(models.CharField):
@@ -106,6 +108,15 @@ class HexField(models.CharField):
         else:  # str
             return HexBytes(value).hex()[2:]
 
+    def formfield(self, **kwargs):
+        # We need max_lenght + 2 on forms because of `0x`
+        defaults = {'max_length': self.max_length + 2}
+        # TODO: Handle multiple backends with different feature flags.
+        if self.null and not connection.features.interprets_empty_strings_as_nulls:
+            defaults['empty_value'] = None
+        defaults.update(kwargs)
+        return super().formfield(**defaults)
+
 
 class Sha3HashField(HexField):
     def __init__(self, *args, **kwargs):
@@ -116,55 +127,3 @@ class Sha3HashField(HexField):
         name, path, args, kwargs = super().deconstruct()
         del kwargs['max_length']
         return name, path, args, kwargs
-
-
-class EthereumBigIntegerField(models.Field):
-    """
-    Deprecated
-    """
-    def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = 64
-        super().__init__(*args, **kwargs)
-
-    def deconstruct(self):
-        name, path, args, kwargs = super().deconstruct()
-        del kwargs['max_length']
-        return name, path, args, kwargs
-
-    def get_internal_type(self):
-        return "CharField"
-
-    def from_db_value(self, value, expression, connection):
-        """
-        Retrieve value as int
-        :param value: number in hexadecimal
-        :return: number as int
-        """
-        if value is None:
-            return value
-        else:
-            return int(value, 16)
-
-    def to_python(self, value):
-        """
-        Use value from form
-        :param value: value as int
-        :return: number as int
-        """
-        value = super().to_python(value)
-        if value is None:
-            return value
-        else:
-            return int(value)
-
-    def get_prep_value(self, value):
-        """
-        :param value:  number in hex or int
-        :return: number in hex without 0x
-        """
-        if value is None:
-            return value
-        elif isinstance(value, str):
-            return value
-        else:
-            return hex(int(value))[2:]
