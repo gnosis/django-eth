@@ -117,6 +117,13 @@ class HexField(models.CharField):
         defaults.update(kwargs)
         return super().formfield(**defaults)
 
+    def clean(self, value, model_instance):
+        value = self.to_python(value)
+        self.validate(value, model_instance)
+        # Validation didn't work because of `0x`
+        self.run_validators(value[2:])
+        return value
+
 
 class Sha3HashField(HexField):
     def __init__(self, *args, **kwargs):
