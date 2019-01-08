@@ -1,9 +1,11 @@
 from django.test import TestCase
+
 from ethereum.utils import check_checksum, sha3
 from faker import Faker
 from hexbytes import HexBytes
 
-from .factories import get_eth_address_with_key
+from gnosis.eth.utils import get_eth_address_with_key
+
 from .models import EthereumAddress, Sha3Hash, Uint256
 
 faker = Faker()

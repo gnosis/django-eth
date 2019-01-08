@@ -1,6 +1,7 @@
 import logging
 
 from django.utils.translation import ugettext_lazy as _
+
 from ethereum.utils import checksum_encode
 from hexbytes import HexBytes
 from rest_framework import serializers

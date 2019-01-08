@@ -1,8 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from gnosis.eth.utils import get_eth_address_with_key
+
 from ..validators import validate_checksumed_address
-from .factories import get_eth_address_with_key
 
 
 class TestValidators(TestCase):

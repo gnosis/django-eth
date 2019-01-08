@@ -1,8 +1,9 @@
-import ethereum.utils
 from django import forms
 from django.core import exceptions
-from django.db import models, DefaultConnectionProxy
+from django.db import DefaultConnectionProxy, models
 from django.utils.translation import gettext_lazy as _
+
+import ethereum.utils
 from hexbytes import HexBytes
 
 from .validators import validate_checksumed_address

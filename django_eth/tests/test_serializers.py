@@ -1,12 +1,14 @@
 from django.test import TestCase
+
 from ethereum.utils import sha3
 from hexbytes import HexBytes
 from rest_framework import serializers
 
+from gnosis.eth.utils import (get_eth_address_with_invalid_checksum,
+                              get_eth_address_with_key)
+
 from ..constants import NULL_ADDRESS, SENTINEL_ADDRESS
 from ..serializers import EthereumAddressField, HexadecimalField, Sha3HashField
-from .factories import (get_eth_address_with_invalid_checksum,
-                        get_eth_address_with_key)
 
 
 class EthereumAddressSerializerTest(serializers.Serializer):
