@@ -1,31 +1,11 @@
-Django Ethereum (django-eth)
-############################
+Django Ethereum (django-eth) DEPRECATED
+#######################################
 
 .. class:: no-web no-pdf
 
 |travis| |coveralls| |python| |django| |pipy|
 
-Django ethereum is a set of helpers for working with
-ethereum using Django and Django Rest framework.
-
-It includes:
-
-- Basic serializers (signature, transaction)
-- Serializer fields (Ethereum address field, hexadecimal field)
-- Model fields (Ethereum address, Ethereum big integer field)
-- Signing messages
-- Utils for testing
-
-Quick start
------------
-
-Just run ``pip install django-eth`` or add it to your **requirements.txt**
-
-Contributors
-------------
-- Denís Graña (denis@gnosis.pm)
-- Giacomo Licari (giacomo.licari@gnosis.pm)
-- Uxío Fuentefría (uxio@gnosis.pm)
+Now `django-eth` is part of `gnosis-py`, please use that package. https://github.com/gnosis/gnosis-py
 
 .. |travis| image:: https://travis-ci.org/gnosis/django-eth.svg?branch=master
     :target: https://travis-ci.org/gnosis/django-eth
